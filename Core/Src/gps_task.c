@@ -42,6 +42,7 @@ void StartGPSReceiver(void *argument)
     status = osMessageQueueGet(gps_charsHandle, &element, NULL, osWaitForever);
     if(osOK == status)
     {
+      HAL_GPIO_TogglePin(DEBUG_PIN_GPIO_Port, DEBUG_PIN_Pin);
       if(start)
       {
         if(i == 6){
@@ -99,6 +100,7 @@ void StartGPSReceiver(void *argument)
         gps_msg_str[i++] = element;
         start = 1;
       }
+      HAL_GPIO_TogglePin(DEBUG_PIN_GPIO_Port, DEBUG_PIN_Pin);
     }
   }
   /* USER CODE END 5 */
@@ -126,6 +128,7 @@ void Start_Parser(void *argument)
   {
     if(osMessageQueueGet(gps_msgHandle, &gps_msg, NULL, osWaitForever) == osOK)
     {
+      HAL_GPIO_TogglePin(DEBUG_PIN_GPIO_Port, DEBUG_PIN_Pin);
       //debug_printf(gps_msg.msg);
       switch(gps_msg.type)
       {
@@ -152,7 +155,8 @@ void Start_Parser(void *argument)
       }
       memset(&gps_data, 0, sizeof(GPS_POINT));
       memset(&gps_msg, 0, sizeof(GPS_MSG));
-      }
+      HAL_GPIO_TogglePin(DEBUG_PIN_GPIO_Port, DEBUG_PIN_Pin);
+    }
   }
   /* USER CODE END Start_Parser */
 }

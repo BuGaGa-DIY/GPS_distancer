@@ -25,6 +25,7 @@ void Start_lcd(void *argument)
   {
     if(osMessageQueueGet(gps_pointsHandle, &gps_data, NULL, 10000) == osOK)
     {
+      HAL_GPIO_TogglePin(DEBUG_PIN_GPIO_Port, DEBUG_PIN_Pin);
       la_h = (int)gps_data.latitude;
       la_l = (int)((gps_data.latitude - la_h) * 100000);
 
@@ -33,18 +34,22 @@ void Start_lcd(void *argument)
 
       debug_printf("%d.%05d%c %d.%05d%c ", la_h, la_l, gps_data.latSide, lo_h, lo_l, gps_data.lonSide);
       snprintf(text_buf, 32, "%d.%05d %c", la_h, la_l, gps_data.latSide);
-      ST7735_WriteString(10, 50, text_buf, Font_11x18, CYAN, BLACK);
-      snprintf(text_buf, 32, "%d.%05d %c", lo_h, lo_l, gps_data.lonSide);
-      ST7735_WriteString(10, 70, text_buf, Font_11x18, CYAN, BLACK);
-      if(gps_data.type == GGA)
+      if(osSemaphoreAcquire(lcd_semHandle, 100) == osOK)
       {
-        snprintf(text_buf, 32, "S:%d", gps_data.satilits);
-        ST7735_WriteString(0, 0, text_buf, Font_11x18, gps_data.satilits > 5 ? GREEN : RED, BLACK);
-        //debug_printf("Satelits: %d", gps_data.satilits);
+        ST7735_WriteString(10, 50, text_buf, Font_11x18, CYAN, BLACK);
+        snprintf(text_buf, 32, "%d.%05d %c", lo_h, lo_l, gps_data.lonSide);
+        ST7735_WriteString(10, 70, text_buf, Font_11x18, CYAN, BLACK);
+        if(gps_data.type == GGA)
+        {
+          snprintf(text_buf, 32, "S:%d", gps_data.satilits);
+          ST7735_WriteString(0, 0, text_buf, Font_11x18, gps_data.satilits > 5 ? GREEN : RED, BLACK);
+        }
+        snprintf(text_buf, 32, "UTC:%s", gps_data.lastMeasure);
+        ST7735_WriteString(20, 149, text_buf, Font_7x10, YELLOW, BLACK);
+        osSemaphoreRelease(lcd_semHandle);
       }
-      snprintf(text_buf, 32, "UTC:%s", gps_data.lastMeasure);
-      ST7735_WriteString(20, 149, text_buf, Font_7x10, YELLOW, BLACK);
       no_data = 0;
+      HAL_GPIO_TogglePin(DEBUG_PIN_GPIO_Port, DEBUG_PIN_Pin);
     } else if(!no_data)
     {
       no_data = 1;
@@ -71,12 +76,18 @@ void Start_lcd_idel(void *argument)
   {
     for(int i = 2; i < 11; ++i)
     {
-      drawCircle(118, 10, i, MAGENTA);
+      if(osSemaphoreAcquire(lcd_semHandle, 100) == osOK){
+        drawCircle(118, 10, i, MAGENTA);
+        osSemaphoreRelease(lcd_semHandle);
+      }
       osDelay(70);
     }
     for(int i = 10; i > 0; --i)
     {
-      drawCircle(118, 10, i, BLACK);
+      if(osSemaphoreAcquire(lcd_semHandle, 100) == osOK){
+        drawCircle(118, 10, i, BLACK);
+        osSemaphoreRelease(lcd_semHandle);
+      }
       osDelay(100);
     }
   }

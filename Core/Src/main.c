@@ -66,7 +66,7 @@ osThreadId_t LCD_UpdaterHandle;
 const osThreadAttr_t LCD_Updater_attributes = {
   .name = "LCD_Updater",
   .stack_size = 256 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityHigh,
 };
 /* Definitions for Print_Task */
 osThreadId_t Print_TaskHandle;
@@ -191,10 +191,10 @@ int main(void)
 
   /* Create the queue(s) */
   /* creation of gps_chars */
-  gps_charsHandle = osMessageQueueNew (256, sizeof(uint8_t), &gps_chars_attributes);
+  gps_charsHandle = osMessageQueueNew (32, sizeof(uint8_t), &gps_chars_attributes);
 
   /* creation of gps_msg */
-  gps_msgHandle = osMessageQueueNew (16, sizeof(GPS_MSG), &gps_msg_attributes);
+  gps_msgHandle = osMessageQueueNew (8, sizeof(GPS_MSG), &gps_msg_attributes);
 
   /* creation of printer_q */
   printer_qHandle = osMessageQueueNew (10, DEBUG_MSG_LEN, &printer_q_attributes);
