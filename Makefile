@@ -44,6 +44,7 @@ Core/Src/fonts.c \
 Core/Src/lcd_gfx.c \
 Core/Src/lcd_task.c \
 Core/Src/utility.c \
+Core/Src/images.c \
 Core/Src/freertos.c \
 Core/Src/stm32f4xx_it.c \
 Core/Src/stm32f4xx_hal_msp.c \

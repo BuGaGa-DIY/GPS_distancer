@@ -1,8 +1,9 @@
+#include <stdio.h>
 #include "main.h"
 #include "gps.h"
 #include "st7735.h"
 #include "lcd_gfx.h"
-#include <stdio.h>
+#include "images.h"
 
 /* USER CODE BEGIN Header_Start_lcd */
 /**
@@ -20,6 +21,7 @@ void Start_lcd(void *argument)
   ST7735_Init(0);
   fillScreen(BLACK);
   ST7735_SetRotation(2);
+  ST7735_DrawImage(0, 0, 128, 160, (const uint16_t *)logo);
   /* Infinite loop */
   for(;;)
   {
@@ -71,6 +73,7 @@ void Start_lcd(void *argument)
 void Start_lcd_idel(void *argument)
 {
   /* USER CODE BEGIN Start_lcd_idel */
+  osDelay(5000);
   /* Infinite loop */
   for(;;)
   {
